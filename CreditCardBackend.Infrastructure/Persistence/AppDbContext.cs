@@ -9,6 +9,7 @@ namespace CreditCardBackend.Infrastructure.Persistence
         : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
         public DbSet<CreditCard> CreditCards { get; set; } = null!;
+        public DbSet<Transaction> Transactions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -17,5 +17,10 @@ namespace CreditCardBackend.Domain.Interfaces.IGeneric
         void DeleteAsync(T entity);
         Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
         Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, params string[] includeProperties);
+        Task<(List<T> Items, int TotalCount)> GetPagedAsync(
+            Expression<Func<T, bool>> predicate,
+            int pageNumber,
+            int pageSize,
+            params Expression<Func<T, object>>[] includes);
     }
 }

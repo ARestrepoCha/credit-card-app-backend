@@ -1,6 +1,7 @@
 ﻿using CreditCardBackend.Application.Common.Interfaces.Authentication;
 using CreditCardBackend.Application.Common.Interfaces.Security;
 using CreditCardBackend.Domain.Entities;
+using CreditCardBackend.Domain.Interfaces;
 using CreditCardBackend.Domain.Interfaces.IGeneric;
 using CreditCardBackend.Domain.Interfaces.Repositories;
 using CreditCardBackend.Infrastructure.Authentication;
@@ -45,6 +46,7 @@ namespace CreditCardBackend.Infrastructure
 
             // Repositories
             services.AddScoped<ICreditCardRepository, CreditCardRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
 
             return services;
         }

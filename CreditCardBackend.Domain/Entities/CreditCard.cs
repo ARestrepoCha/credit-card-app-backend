@@ -13,5 +13,7 @@ namespace CreditCardBackend.Domain.Entities
 
         public Guid UserId { get; set; }
         public virtual User User { get; set; } = null!;
+
+        public virtual ICollection<Transaction> Transactions { get; set; } = [];
     }
 }

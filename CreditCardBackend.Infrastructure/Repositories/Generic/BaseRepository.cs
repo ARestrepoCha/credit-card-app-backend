@@ -194,20 +194,13 @@ namespace CreditCardBackend.Infrastructure.Repositories.Generic
             {
                 return await _context.Set<T>().FirstOrDefaultAsync(predicate);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                var query = _context.Set<T>()
-                                    .Where(predicate)
-                                    .ToQueryString();
+                _context.Set<T>()
+                    .Where(predicate)
+                    .ToQueryString();
 
-                Console.WriteLine("❌ ERROR ejecutando FirstOrDefaultAsync");
-                Console.WriteLine($"Entidad: {typeof(T).Name}");
-                Console.WriteLine("👉 SQL generado:");
-                Console.WriteLine(query);
-                Console.WriteLine("👉 Excepción:");
-                Console.WriteLine(ex);
-
-                throw; // muy importante, relanza para que EF no quede inconsistente
+                throw;
             }
         }
 
@@ -221,6 +214,35 @@ namespace CreditCardBackend.Infrastructure.Repositories.Generic
             }
 
             return await query.FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<(List<T> Items, int TotalCount)> GetPagedAsync(
+            Expression<Func<T, bool>> predicate,
+            int pageNumber,
+            int pageSize,
+            params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            query = query.Where(predicate);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(t => EF.Property<DateTime>(t, "CreatedOn"))
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
         }
     }
 }
