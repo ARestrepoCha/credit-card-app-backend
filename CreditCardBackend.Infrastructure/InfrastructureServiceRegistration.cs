@@ -1,7 +1,13 @@
 ﻿using CreditCardBackend.Application.Common.Interfaces.Authentication;
+using CreditCardBackend.Application.Common.Interfaces.Security;
 using CreditCardBackend.Domain.Entities;
+using CreditCardBackend.Domain.Interfaces.IGeneric;
+using CreditCardBackend.Domain.Interfaces.Repositories;
 using CreditCardBackend.Infrastructure.Authentication;
 using CreditCardBackend.Infrastructure.Persistence;
+using CreditCardBackend.Infrastructure.Repositories;
+using CreditCardBackend.Infrastructure.Repositories.Generic;
+using CreditCardBackend.Infrastructure.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +22,8 @@ namespace CreditCardBackend.Infrastructure
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddHttpContextAccessor();
+
             services.AddIdentityCore<User>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -27,8 +35,16 @@ namespace CreditCardBackend.Infrastructure
              .AddEntityFrameworkStores<AppDbContext>()
              .AddDefaultTokenProviders();
 
+            // Services
+            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             // Register infrastructure services here
+            services.AddSingleton<IEncryptionService, EncryptionService>();
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+            // Repositories
+            services.AddScoped<ICreditCardRepository, CreditCardRepository>();
 
             return services;
         }

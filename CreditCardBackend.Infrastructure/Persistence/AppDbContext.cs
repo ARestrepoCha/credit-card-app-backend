@@ -8,6 +8,8 @@ namespace CreditCardBackend.Infrastructure.Persistence
     public partial class AppDbContext(DbContextOptions<AppDbContext> options)
         : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
+        public DbSet<CreditCard> CreditCards { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

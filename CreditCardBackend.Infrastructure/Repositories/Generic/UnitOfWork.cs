@@ -1,4 +1,5 @@
 ﻿using CreditCardBackend.Domain.Interfaces.IGeneric;
+using CreditCardBackend.Domain.Interfaces.Repositories;
 using CreditCardBackend.Infrastructure.Persistence;
 using System.Collections;
 
@@ -9,6 +10,8 @@ namespace CreditCardBackend.Infrastructure.Repositories.Generic
         private readonly AppDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
         private Hashtable? _repositories;
         private bool _disposed = false;
+
+        public ICreditCardRepository CreditCardRepository => new CreditCardRepository(_context);
 
         public IBaseRepository<T> Repository<T>() where T : class
         {

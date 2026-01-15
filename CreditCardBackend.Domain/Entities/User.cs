@@ -11,5 +11,7 @@ namespace CreditCardBackend.Domain.Entities
         public Guid? CreatedBy { get; set; }
         public Guid? LastModifiedBy { get; set; }
         public bool IsActive { get; set; }
+
+        public virtual ICollection<CreditCard> CreditCards { get; set; } = [];
     }
 }
