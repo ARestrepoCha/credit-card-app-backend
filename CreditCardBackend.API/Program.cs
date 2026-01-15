@@ -1,11 +1,44 @@
+using CreditCardBackend.API.Middlewares;
+using CreditCardBackend.Application;
+using CreditCardBackend.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services
+    .AddInfrastructureServices(builder.Configuration)
+    .AddApplicationServices();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// --- CONFIGURACIÓN JWT ÚNICA ---
+var jwtSecret = builder.Configuration["JwtSettings:Secret"]
+                ?? throw new InvalidOperationException("JWT Secret not found");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 var app = builder.Build();
 
@@ -16,8 +49,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 
+// El orden es fundamental: 1. Auth, 2. Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -1,11 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CreditCardBackend.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace CreditCardBackend.Infrastructure.Persistence
 {
-    public partial class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+    public partial class AppDbContext(DbContextOptions<AppDbContext> options)
+        : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
     }

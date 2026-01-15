@@ -102,10 +102,9 @@ namespace CreditCardBackend.Infrastructure.Repositories.Generic
 
         public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> predicate, params string[] includeProperties)
         {
-            IQueryable<T>? query = null;
             try
             {
-                query = _context.Set<T>().Where(predicate);
+                IQueryable<T>? query = _context.Set<T>().Where(predicate);
 
                 foreach (var includeProperty in includeProperties)
                 {
