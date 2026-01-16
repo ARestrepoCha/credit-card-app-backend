@@ -40,6 +40,17 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("WebAppPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // La URL de tu React (Vite)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -48,11 +59,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("WebAppPolicy");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 
-// El orden es fundamental: 1. Auth, 2. Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 

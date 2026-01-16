@@ -32,9 +32,9 @@ namespace CreditCardBackend.API.Controllers
         }
 
         [HttpGet("history")]
-        public async Task<IActionResult> GetHistory([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetHistory([FromQuery] Guid creditCardId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10 )
         {
-            var result = await _mediator.Send(new GetTransactionHistoryQuery(pageNumber, pageSize));
+            var result = await _mediator.Send(new GetTransactionHistoryQuery(creditCardId, pageNumber, pageSize));
 
             return result.Match(
                 payments => StatusCode(

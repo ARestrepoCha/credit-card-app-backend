@@ -18,7 +18,7 @@ namespace CreditCardBackend.Application.Features.Payments.Queries.GetTransaction
             var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             var (items, totalCount) = await unitOfWork.Repository<Transaction>().GetPagedAsync(
-                t => t.CreditCard.UserId == userId,
+                t => t.CreditCard.UserId == userId && t.CreditCardId == request.creditCardId,
                 request.PageNumber,
                 request.PageSize,
                 t => t.CreditCard

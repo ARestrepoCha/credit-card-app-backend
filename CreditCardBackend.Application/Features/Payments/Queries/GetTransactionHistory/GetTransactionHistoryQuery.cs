@@ -5,6 +5,6 @@ using MediatR;
 
 namespace CreditCardBackend.Application.Features.Payments.Queries.GetTransactionHistory
 {
-    public record GetTransactionHistoryQuery(int PageNumber = 1, int PageSize = 10)
+    public record GetTransactionHistoryQuery(Guid creditCardId, int PageNumber = 1, int PageSize = 10)
         : IRequest<ErrorOr<PagedList<TransactionResponseDto>>>;
 }
